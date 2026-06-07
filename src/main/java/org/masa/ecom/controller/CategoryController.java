@@ -1,5 +1,6 @@
 package org.masa.ecom.controller;
 
+import jakarta.validation.Valid;
 import org.masa.ecom.model.Category;
 import org.masa.ecom.service.CategoryService;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class CategoryController {
     }
 
     @PostMapping("/public/categories")
-    public ResponseEntity<String> createCategory(@RequestBody Category category) {
+    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
         categoryService.createCategory(category);
         return new ResponseEntity<>("Category added successfully", HttpStatus.CREATED);
     }
