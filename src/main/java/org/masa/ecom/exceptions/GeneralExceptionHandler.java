@@ -6,6 +6,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class GeneralExceptionHandler {
         });
 
         GeneralException response =
-                new GeneralException(errors, e.getStatusCode().value());
+                new GeneralException(errors);
 
         return ResponseEntity
                 .status(e.getStatusCode().value())
@@ -55,12 +56,57 @@ public class GeneralExceptionHandler {
 
         GeneralException response =
                 new GeneralException(
-                        errors,
-                        HttpStatus.INTERNAL_SERVER_ERROR.value()
+                        errors
                 );
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<GeneralException> handleResourceNotFoundException(ResourceNotFoundException e) {
+
+        List<GeneralException.ExceptionPair> errors = new ArrayList<>();
+
+        errors.add(
+                new GeneralException.ExceptionPair(
+                        "error",
+                        e.getMessage()
+                )
+        );
+
+        GeneralException response =
+                new GeneralException(
+                        errors
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+
+    }
+
+    @ExceptionHandler(APIException.class)
+    public ResponseEntity<GeneralException> handleAPIException(APIException e) {
+
+        List<GeneralException.ExceptionPair> errors = new ArrayList<>();
+
+        errors.add(
+                new GeneralException.ExceptionPair(
+                        "error",
+                        e.getMessage()
+                )
+        );
+
+        GeneralException response =
+                new GeneralException(
+                        errors
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+
     }
 }

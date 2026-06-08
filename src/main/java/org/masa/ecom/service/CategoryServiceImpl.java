@@ -1,5 +1,7 @@
 package org.masa.ecom.service;
 
+import org.masa.ecom.exceptions.APIException;
+import org.masa.ecom.exceptions.ResourceNotFoundException;
 import org.masa.ecom.model.Category;
 import org.masa.ecom.repository.CategoryRepository;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void createCategory(Category category) {
+        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+        if (savedCategory != null)
+            throw new APIException("Category with the name "+category.getCategoryName()+" already exists");
         categoryRepository.save(category);
     }
 
@@ -31,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     public String deleteCategory(Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recourse not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryId", categoryId));
 
         categoryRepository.delete(category);
         return "Category with categoryId: "+ categoryId + " deleted successfully";
@@ -47,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             return categoryRepository.save(existingCategory);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recourse not found");
+            throw new ResourceNotFoundException("Category","categoryId", categoryId);
         }
     }
 }
